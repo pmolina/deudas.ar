@@ -287,6 +287,16 @@ export default function App() {
             ))}
           </div>
         )}
+        <footer className="mt-12 text-center text-xs text-gray-400 dark:text-gray-600">
+          Hecho por <a
+            href="https://x.com/intent/user?screen_name=patomolina"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-500 dark:text-gray-500 underline underline-offset-2 hover:text-gray-800 dark:hover:text-gray-300 transition-colors"
+          >
+            Pato Molina
+          </a>
+        </footer>
       </div>
     </div>
   );
