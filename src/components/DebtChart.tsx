@@ -30,6 +30,18 @@ function situacionClass(sit: number): string {
   return 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400';
 }
 
+const SITUACIONES: { sit: number; label: string }[] = [
+  { sit: 1, label: 'Normal' },
+  { sit: 2, label: 'Con seguimiento especial' },
+  { sit: 3, label: 'Con problemas' },
+  { sit: 4, label: 'Alto riesgo de insolvencia' },
+  { sit: 5, label: 'Irrecuperable' },
+];
+
+function situacionLabel(sit: number): string {
+  return `Situación ${sit}: ${SITUACIONES.find(s => s.sit === sit)?.label ?? 'Desconocida'}`;
+}
+
 interface TooltipPayloadItem {
   name: string;
   value: number;
@@ -108,22 +120,19 @@ function CustomTooltip({ active, payload, label }: {
         <span className="font-semibold text-gray-900 dark:text-gray-100">{formatARS(total)}</span>
       </div>
 
-      {/* Per-situation breakdown (only when there are multiple situations) */}
-      {sitEntries.length > 1 && (
+      {/* Per-situation breakdown */}
+      {sitEntries.length > 0 && (
         <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700 space-y-1">
           <p className="text-gray-400 dark:text-gray-500 mb-1.5">Por situación</p>
           {sitEntries.map(([sit, amount]) => {
             const pct = total > 0 ? ((amount / total) * 100).toFixed(2) : '0.00';
             return (
-              <div key={sit} className="flex items-center gap-2">
-                <span className={`shrink-0 px-1.5 py-0.5 rounded font-medium ${situacionClass(sit)}`}>
-                  Sit. {sit}
-                </span>
-                <span className="flex-1" />
-                <span className="text-gray-700 dark:text-gray-300">
+              <div key={sit} className={`rounded px-1.5 py-1 ${situacionClass(sit)}`}>
+                <p className="font-medium">{situacionLabel(sit)}</p>
+                <p className="mt-0.5">
                   {formatARS(amount)}
-                  <span className="text-gray-400 dark:text-gray-500 ml-1">({pct}%)</span>
-                </span>
+                  <span className="ml-1 opacity-70">({pct}%)</span>
+                </p>
               </div>
             );
           })}
