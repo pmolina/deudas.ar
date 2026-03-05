@@ -253,7 +253,18 @@ export default function App() {
           <CUITInput onSubmit={handleSubmit} loading={loading} initialValue={initialInputValue} />
           {history.length > 0 && (
             <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Recientes</p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Recientes</p>
+                <button
+                  onClick={() => {
+                    setHistory([]);
+                    localStorage.removeItem(HISTORY_KEY);
+                  }}
+                  className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                >
+                  Borrar todo
+                </button>
+              </div>
               <div className="space-y-0.5">
                 {history.map(item => (
                   <div key={item.cuit} className="flex items-center gap-1 group">
