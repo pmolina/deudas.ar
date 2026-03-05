@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { ResultState, ChequesState } from './types/bcra';
-import { fetchDebtHistory, fetchRejectedChecks } from './api/bcra';
+import { fetchDebtHistory, fetchRejectedChecks, NotFoundError } from './api/bcra';
 import { CUITInput } from './components/CUITInput';
 import { ResultCard } from './components/ResultCard';
 
@@ -175,11 +175,20 @@ export default function App() {
       upsertHistory(cuit, denominacion);
     });
 
+    const notFoundCuits = new Set(
+      cuits.filter((_, i) =>
+        debtSettled[i]?.status === 'rejected' && debtSettled[i].reason instanceof NotFoundError &&
+        checksSettled[i]?.status === 'rejected' && checksSettled[i].reason instanceof NotFoundError
+      )
+    );
+
     setResults(() => {
       const next = new Map<string, ResultState>();
       debtSettled.forEach((result, i) => {
         const cuit = cuits[i]!;
-        if (result.status === 'fulfilled') {
+        if (notFoundCuits.has(cuit)) {
+          next.set(cuit, { status: 'error', message: 'CUIT no encontrado en el sistema del BCRA' });
+        } else if (result.status === 'fulfilled') {
           const data = result.value.results;
           if (!data || data.periodos.length === 0) {
             next.set(cuit, { status: 'empty' });
@@ -187,8 +196,8 @@ export default function App() {
             next.set(cuit, { status: 'success', data });
           }
         } else {
-          const msg = result.reason instanceof Error ? result.reason.message : 'Error desconocido';
-          next.set(cuit, msg.includes('sin deuda') ? { status: 'empty' } : { status: 'error', message: msg });
+          const is404 = result.reason instanceof NotFoundError;
+          next.set(cuit, is404 ? { status: 'empty' } : { status: 'error', message: result.reason instanceof Error ? result.reason.message : 'Error desconocido' });
         }
       });
       return next;
@@ -198,7 +207,9 @@ export default function App() {
       const next = new Map<string, ChequesState>();
       checksSettled.forEach((result, i) => {
         const cuit = cuits[i]!;
-        if (result.status === 'fulfilled') {
+        if (notFoundCuits.has(cuit)) {
+          next.set(cuit, { status: 'error', message: 'CUIT no encontrado en el sistema del BCRA' });
+        } else if (result.status === 'fulfilled') {
           const data = result.value.results;
           if (!data || data.causales.length === 0) {
             next.set(cuit, { status: 'empty' });
@@ -206,8 +217,8 @@ export default function App() {
             next.set(cuit, { status: 'success', data });
           }
         } else {
-          const msg = result.reason instanceof Error ? result.reason.message : 'Error desconocido';
-          next.set(cuit, msg.includes('sin cheques') ? { status: 'empty' } : { status: 'error', message: msg });
+          const is404 = result.reason instanceof NotFoundError;
+          next.set(cuit, is404 ? { status: 'empty' } : { status: 'error', message: result.reason instanceof Error ? result.reason.message : 'Error desconocido' });
         }
       });
       return next;
@@ -277,7 +288,7 @@ export default function App() {
         {activeCuits.length > 0 && (
           <div className="space-y-5">
             <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Resultados ({activeCuits.length} CUIT{activeCuits.length !== 1 ? 's' : ''})
+              Resultados
             </h2>
             {activeCuits.map(cuit => (
               <ResultCard
