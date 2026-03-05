@@ -96,16 +96,16 @@ export function ResultCard({ cuit, state, checksState }: Props) {
   return (
     <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
-        <div>
+      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between gap-2">
+        <div className="min-w-0">
           <p className="text-xs text-gray-500 dark:text-gray-400 font-mono">{formatCuit(cuit)}</p>
           {denominacion && (
-            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mt-0.5">
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mt-0.5 truncate">
               {denominacion}
             </p>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           {hasIrregularLastPeriod ? (
             <span className="text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-full whitespace-nowrap">
               Situación irregular
