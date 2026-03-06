@@ -173,6 +173,11 @@ export default function App() {
         (checks?.status === 'fulfilled' && checks.value.results?.denominacion) ||
         null;
       upsertHistory(cuit, denominacion);
+      fetch('/api/log-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cuit, denominacion }),
+      }).catch(() => {});
     });
 
     const notFoundCuits = new Set(
