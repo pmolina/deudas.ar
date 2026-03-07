@@ -20,11 +20,11 @@ interface BCRAResult {
 
 const SITUATION_COLORS: Record<number, string> = {
   1: '#14532d',
-  2: '#78350f',
+  2: '#7c2d12',
   3: '#7c2d12',
   4: '#7f1d1d',
-  5: '#581c87',
-  6: '#1e1b4b',
+  5: '#7f1d1d',
+  6: '#7f1d1d',
 };
 
 function formatMoney(n: number): string {
