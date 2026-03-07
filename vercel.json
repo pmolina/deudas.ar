@@ -1,5 +1,19 @@
 {
   "rewrites": [
-    { "source": "/((?!api/|assets/).*)", "destination": "/index.html" }
+    {
+      "source": "/:cuit(\\d{11})/:path*",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(bot|crawl|spider|facebook|facebot|twitter|whatsapp|telegram|linkedin|slack|discord|ia_archiver).*"
+        }
+      ],
+      "destination": "/api/og-page?cuit=:cuit"
+    },
+    {
+      "source": "/((?!api/|assets/|src/|node_modules/|@).*)",
+      "destination": "/index.html"
+    }
   ]
 }
