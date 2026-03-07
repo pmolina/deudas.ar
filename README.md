@@ -21,7 +21,8 @@ Look up the debt history of an Argentine CUIT using the [BCRA Central de Deudore
   - On mobile, tap a bar to show a centered tooltip
 - Rejected checks table
 - API status indicator
-- Share options — native share sheet on mobile, clipboard copy on desktop, and a WhatsApp button with a pre-filled message in Spanish; opening a shared `?cuit=` link pre-fills and runs the query automatically
+- Clean URL routing — results are available at `/{cuit}/` (e.g. `deudas.ar/27443656419/`); legacy `?cuit=` links redirect automatically
+- Share options — native share sheet on mobile, clipboard copy on desktop, and a WhatsApp button with a pre-filled message in Spanish; opening a shared link pre-fills and runs the query automatically
 - Recent searches history stored in `localStorage`, with quick re-search and per-entry deletion
 - Dark mode by default, with light mode toggle and `localStorage` persistence
 - Social media preview cards (Open Graph + Twitter Card)

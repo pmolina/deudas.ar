@@ -133,25 +133,66 @@ export default function App() {
   }
 
   const [initialInputValue] = useState(() => {
+    // Redirect ?cuit=... to /{cuit}/ path
     const params = new URLSearchParams(window.location.search);
-    const cuit = params.get('cuit');
-    return cuit ? cuit.split(',').join('\n') : '';
+    const queryCuit = params.get('cuit');
+    if (queryCuit) {
+      const cuits = queryCuit.split(',').map(c => c.replace(/-/g, '').trim()).filter(Boolean);
+      if (cuits.length > 0) {
+        const path = '/' + cuits.join(',') + '/';
+        window.history.replaceState(null, '', path);
+        return cuits.join('\n');
+      }
+    }
+    // Read CUIT from path: /{cuit}/
+    const pathMatch = window.location.pathname.match(/^\/([0-9,\-]+)\/?$/);
+    if (pathMatch) {
+      const cuits = pathMatch[1].split(',').map(c => c.replace(/-/g, '').trim()).filter(Boolean);
+      if (cuits.length > 0) return cuits.join('\n');
+    }
+    return '';
   });
 
   const loading = [...results.values()].some(r => r.status === 'loading')
     || [...checksResults.values()].some(r => r.status === 'loading');
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const cuit = params.get('cuit');
-    if (cuit) {
-      const cuits = cuit.split(',').map(c => c.replace(/-/g, '').trim()).filter(Boolean);
+    // Read CUIT from path: /{cuit}/
+    const pathMatch = window.location.pathname.match(/^\/([0-9,\-]+)\/?$/);
+    if (pathMatch) {
+      const cuits = pathMatch[1].split(',').map(c => c.replace(/-/g, '').trim()).filter(Boolean);
       if (cuits.length > 0) handleSubmit(cuits);
     }
+
+    // Handle browser back/forward
+    function onPopState() {
+      const match = window.location.pathname.match(/^\/([0-9,\-]+)\/?$/);
+      if (match) {
+        const cuits = match[1].split(',').map(c => c.replace(/-/g, '').trim()).filter(Boolean);
+        if (cuits.length > 0) {
+          setInputValue(cuits.map(c => formatCuit(c)).join('\n'));
+          handleSubmit(cuits);
+          return;
+        }
+      }
+      // Back to home
+      setActiveCuits([]);
+      setResults(new Map());
+      setChecksResults(new Map());
+      setInputValue('');
+    }
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleSubmit(cuits: string[]) {
     setActiveCuits(cuits);
+
+    // Update URL to /{cuit}/ path
+    const newPath = '/' + cuits.join(',') + '/';
+    if (window.location.pathname !== newPath) {
+      window.history.pushState(null, '', newPath);
+    }
 
     const loadingDebt = new Map<string, ResultState>(cuits.map(c => [c, { status: 'loading' }]));
     const loadingChecks = new Map<string, ChequesState>(cuits.map(c => [c, { status: 'loading' }]));

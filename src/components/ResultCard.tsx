@@ -58,7 +58,7 @@ export function ResultCard({ cuit, state, checksState }: Props) {
   const [copied, setCopied] = useState(false);
 
   async function handleShare() {
-    const url = `${window.location.origin}${window.location.pathname}?cuit=${cuit}`;
+    const url = `${window.location.origin}/${cuit}/`;
     const title = denominacion ?? cuit;
     if (navigator.share) {
       try {
@@ -116,7 +116,7 @@ export function ResultCard({ cuit, state, checksState }: Props) {
             </span>
           ) : null}
           <a
-            href={`https://wa.me/?text=${encodeURIComponent(`Consultá el historial de deudas de ${denominacion ?? cuit} en la Central de Deudores del BCRA: ${window.location.origin}${window.location.pathname}?cuit=${cuit}`)}`}
+            href={`https://wa.me/?text=${encodeURIComponent(`Consultá el historial de deudas de ${denominacion ?? cuit} en la Central de Deudores del BCRA: ${window.location.origin}/${cuit}/`)}`}
             target="_blank"
             rel="noopener noreferrer"
             title="Compartir por WhatsApp"
