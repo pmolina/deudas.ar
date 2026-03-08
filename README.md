@@ -25,7 +25,7 @@ Look up the debt history of an Argentine CUIT using the [BCRA Central de Deudore
 - Share options — native share sheet on mobile, clipboard copy on desktop, and a WhatsApp button with a pre-filled message in Spanish; opening a shared link pre-fills and runs the query automatically
 - Recent searches history stored in `localStorage`, with quick re-search and per-entry deletion
 - Dark mode by default, with light mode toggle and `localStorage` persistence
-- Social media preview cards (Open Graph + Twitter Card)
+- Dynamic OG cards — when sharing a CUIT URL, bots receive a 1200x630 card with the person's name, total debt, situation badge, and color-coded background (green/orange/red)
 - MIT licensed
 
 ## Tech stack
@@ -33,13 +33,28 @@ Look up the debt history of an Argentine CUIT using the [BCRA Central de Deudore
 - [Vite](https://vitejs.dev/) + [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
 - [Tailwind CSS v4](https://tailwindcss.com/)
 - [Recharts](https://recharts.org/)
+- [@vercel/og](https://vercel.com/docs/functions/og-image-generation) for dynamic OG image generation (edge runtime)
 
 ## Local development
 
 ```bash
 npm install
-npm run dev
+npm run dev          # Vite dev server (SPA only)
+npm run dev:vercel   # Vercel dev server (SPA + API functions)
 ```
+
+The OG image endpoint (`/api/og`) only works on Vercel's infrastructure (edge WASM). Use `/api/og-page?cuit=XXXXXXXXXXX` to test the bot HTML locally.
+
+## OG cards architecture
+
+```
+Browser  -> /{cuit}/  -> index.html (SPA)
+Bot      -> /{cuit}/  -> /api/og-page?cuit=X  -> HTML with <meta og:image="/api/og?cuit=X">
+                                                    |
+                                               /api/og?cuit=X -> 1200x630 PNG
+```
+
+Bot detection is handled at the Vercel routing level via `has` header conditions in `vercel.json` — no middleware or `Vary: User-Agent` needed.
 
 ## Build
 

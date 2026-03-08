@@ -222,13 +222,6 @@ export default function App() {
         (checks?.status === 'fulfilled' && checks.value.results?.denominacion) ||
         null;
       upsertHistory(cuit, denominacion);
-      if (!notFoundCuits.has(cuit)) {
-        fetch('/api/log-search', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ cuit, denominacion }),
-        }).catch(() => {});
-      }
     });
 
     setResults(() => {
@@ -303,7 +296,7 @@ export default function App() {
           {history.length > 0 && (
             <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Recientes</p>
+                <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Tus busquedas recientes</p>
                 <button
                   onClick={() => {
                     setHistory([]);
